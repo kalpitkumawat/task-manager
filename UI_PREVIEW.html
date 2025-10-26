@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager - UI Preview</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #EFF6FF 0%, #E0E7FF 50%, #F3E8FF 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 56rem;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        .header-icon {
+            width: 3rem;
+            height: 3rem;
+            color: #4F46E5;
+            margin-right: 0.75rem;
+        }
+        
+        h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1F2937;
+        }
+        
+        .subtitle {
+            color: #6B7280;
+            font-size: 1.125rem;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+            animation: slideIn 0.5s ease-out;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border: 1px solid #E5E7EB;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat-number.total { color: #4F46E5; }
+        .stat-number.active { color: #3B82F6; }
+        .stat-number.completed { color: #10B981; }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+        
+        .main-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            animation: slideIn 0.5s ease-out 0.1s both;
+        }
+        
+        .add-task-section {
+            padding: 1.5rem;
+            background: linear-gradient(to right, #EEF2FF, #FAF5FF);
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .add-task-form {
+            display: flex;
+            gap: 0.75rem;
+        }
+        
+        .task-input {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .task-input:focus {
+            outline: none;
+            border-color: #4F46E5;
+        }
+        
+        .add-button {
+            padding: 0.75rem 1.5rem;
+            background: #4F46E5;
+            color: white;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);
+            transition: all 0.2s;
+        }
+        
+        .add-button:hover {
+            background: #4338CA;
+            box-shadow: 0 6px 8px rgba(79, 70, 229, 0.4);
+        }
+        
+        .filter-tabs {
+            display: flex;
+            background: #F9FAFB;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        
+        .filter-tab {
+            flex: 1;
+            padding: 1rem;
+            text-align: center;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-weight: 500;
+            color: #6B7280;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .filter-tab.active {
+            color: #4F46E5;
+            border-bottom-color: #4F46E5;
+            background: white;
+        }
+        
+        .filter-tab:hover:not(.active) {
+            color: #1F2937;
+            background: #F3F4F6;
+        }
+        
+        .badge {
+            display: inline-block;
+            margin-left: 0.5rem;
+            padding: 0.125rem 0.5rem;
+            background: #E5E7EB;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+        }
+        
+        .task-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .task-item {
+            padding: 1rem;
+            border-bottom: 1px solid #F3F4F6;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            transition: background 0.15s;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .task-item:hover {
+            background: #F9FAFB;
+        }
+        
+        .task-checkbox {
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid #D1D5DB;
+            border-radius: 50%;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .task-checkbox:hover {
+            border-color: #4F46E5;
+        }
+        
+        .task-checkbox.completed {
+            background: #10B981;
+            border-color: #10B981;
+            position: relative;
+        }
+        
+        .task-checkbox.completed::after {
+            content: "✓";
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.875rem;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-description {
+            font-size: 1.125rem;
+            color: #1F2937;
+            margin-bottom: 0.25rem;
+            transition: all 0.2s;
+        }
+        
+        .task-description.completed {
+            color: #9CA3AF;
+            text-decoration: line-through;
+        }
+        
+        .task-timestamp {
+            font-size: 0.75rem;
+            color: #6B7280;
+        }
+        
+        .delete-button {
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            color: #9CA3AF;
+            cursor: pointer;
+            border-radius: 0.5rem;
+            opacity: 0;
+            transition: all 0.2s;
+        }
+        
+        .task-item:hover .delete-button {
+            opacity: 1;
+        }
+        
+        .delete-button:hover {
+            background: #FEE2E2;
+            color: #EF4444;
+        }
+        
+        .footer {
+            padding: 1rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6B7280;
+            background: #F9FAFB;
+            border-top: 1px solid #E5E7EB;
+        }
+        
+        .info-note {
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #6B7280;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        .preview-banner {
+            background: #DBEAFE;
+            border: 2px solid #3B82F6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            color: #1E40AF;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="preview-banner">
+            📱 UI Preview - This is a static mockup of the actual React application
+        </div>
+        
+        <div class="header">
+            <div class="header-content">
+                <svg class="header-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                </svg>
+                <h1>Task Manager</h1>
+            </div>
+            <p class="subtitle">Stay organized and productive</p>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number total">5</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number active">3</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number completed">2</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+        
+        <div class="main-card">
+            <div class="add-task-section">
+                <div class="add-task-form">
+                    <input type="text" class="task-input" placeholder="What needs to be done?" value="">
+                    <button class="add-button">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add Task
+                    </button>
+                </div>
+            </div>
+            
+            <div class="filter-tabs">
+                <button class="filter-tab active">
+                    All
+                    <span class="badge">5</span>
+                </button>
+                <button class="filter-tab">
+                    Active
+                    <span class="badge">3</span>
+                </button>
+                <button class="filter-tab">
+                    Completed
+                    <span class="badge">2</span>
+                </button>
+            </div>
+            
+            <div class="task-list">
+                <div class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-description">Complete the home assignment</div>
+                        <div class="task-timestamp">Oct 24, 2025, 10:30 AM</div>
+                    </div>
+                    <button class="delete-button">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-checkbox completed"></div>
+                    <div class="task-content">
+                        <div class="task-description completed">Review the code</div>
+                        <div class="task-timestamp">Oct 24, 2025, 09:15 AM</div>
+                    </div>
+                    <button class="delete-button">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-description">Write documentation</div>
+                        <div class="task-timestamp">Oct 24, 2025, 08:45 AM</div>
+                    </div>
+                    <button class="delete-button">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-checkbox completed"></div>
+                    <div class="task-content">
+                        <div class="task-description completed">Set up development environment</div>
+                        <div class="task-timestamp">Oct 24, 2025, 08:00 AM</div>
+                    </div>
+                    <button class="delete-button">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <div class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-description">Test all features</div>
+                        <div class="task-timestamp">Oct 24, 2025, 07:30 AM</div>
+                    </div>
+                    <button class="delete-button">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="footer">
+                3 tasks remaining
+            </div>
+        </div>
+        
+        <div class="info-note">
+            <p>Tasks are automatically saved to your browser's local storage</p>
+        </div>
+    </div>
+</body>
+</html>
